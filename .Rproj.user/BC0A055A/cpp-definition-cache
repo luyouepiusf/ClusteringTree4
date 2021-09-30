@@ -1,0 +1,17 @@
+[
+    {
+        "file": "/Users/luyou/Dropbox/My Mac (LUs-MacBook-Pro.local)/Documents/research_folder/ClusteringTree4/src/find_best_split_cox_bone.cpp",
+        "file_last_write": 1632754352.0,
+        "definitions": [
+            {
+                "usr": "c:@F@find_best_split_cox_bone#$@N@Rcpp@S@Vector>#VI14#@N@Rcpp@ST>1#T@PreserveStorage#$@N@Rcpp@S@Vector>#VI10#@N@Rcpp@ST>1#T@PreserveStorage#S0_#$@N@Rcpp@S@Matrix>#VI14#@N@Rcpp@ST>1#T@PreserveStorage#$@N@Rcpp@S@Matrix>#VI13#@N@Rcpp@ST>1#T@PreserveStorage#d#",
+                "kind": 6,
+                "parent_name": "",
+                "name": "find_best_split_cox_bone(NumericVector, LogicalVector, NumericVector, NumericMatrix, IntegerMatrix, double)",
+                "file": "/Users/luyou/Dropbox/My Mac (LUs-MacBook-Pro.local)/Documents/research_folder/ClusteringTree4/src/find_best_split_cox_bone.cpp",
+                "line": 4,
+                "column": 6
+            }
+        ]
+    }
+]

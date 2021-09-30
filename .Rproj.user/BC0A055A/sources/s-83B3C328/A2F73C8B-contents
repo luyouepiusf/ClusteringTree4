@@ -1,0 +1,4 @@
+result_find_best_split$best_jj
+
+table(xx_factor[,1],result_find_best_split$to_left,useNA="always")
+table(xx_factor[,1],result_find_best_split$to_right,useNA="always")
