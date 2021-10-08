@@ -8,7 +8,11 @@
 #' @param min_weight minimum weight per observatin
 #' @param missing how missing values are dealts with.  missing = c("majority","omit","weighted), Need Lu to complete
 #'
+<<<<<<< HEAD
 #' @return a clustertree object Need lu to detail.
+=======
+#' @return a clustertree object Need lu to detail
+>>>>>>> 78d030cab3f3986d8aa418c55644e543bd0efae0
 #' @export
 #'
 #' @examples
