@@ -6,7 +6,7 @@
 #' @param weight vector weight of each observation (numeric)
 #' @param significance 
 #' @param min_weight minimum weight per observatin
-#' @param missing how missing values are dealts with.  missing = c("majority","omit","weighted), Need Lu to complete
+#' @param missing how missing values are dealts with.  missing = c("majority","omit","weighted), Need Lu to complete.
 #'
 #' @return a clustertree object Need lu to detail.
 #' @export

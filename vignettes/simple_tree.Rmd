@@ -1,0 +1,83 @@
+---
+title: "simple_tree"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{simple_tree}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ClusteringTree4)
+library(dplyr)
+library(grid)
+library(gridtext)
+library(survival)
+set.seed(1984)
+```
+
+Let simulate a dataframe with 5 numeric column
+
+```{r create-dataframe}
+nind<-500
+ndim_numeric<-5
+ndim_factor<-3
+ft<-rexp(nind,3)
+ct<-rexp(nind,3)
+ot<-pmin(ft,ct)
+delta<-ft<ct
+xx_numeric<-matrix(rnorm(nind*ndim_numeric),nind,ndim_numeric)
+colnames(xx_numeric)<-paste0("X",1:ncol(xx_numeric))
+
+xx_factor<-matrix(NA,nind,ndim_factor)
+xx_factor[,1]<-sample(c("AA","BB","CC","DD"),nind,replace=TRUE)
+xx_factor[,2]<-sample(c("apple","banana","banana","cherry"),nind,replace=TRUE)
+xx_factor[,3]<-sample(c("good","medium","poor"),nind,replace=TRUE)
+colnames(xx_factor)<-paste0("V",1:ncol(xx_factor))
+```
+
+
+```{r}
+
+a_survival_tree<-survival_tree(
+  time=ot,
+  event=delta,
+  matrix_numeric=xx_numeric,
+  matrix_factor=xx_factor,
+  significance=0.05,
+  missing="weighted")
+
+a_table<-tree_to_table(a_survival_tree$survival_tree)
+a_table$survival[[2]]
+
+plot_survival_tree(a_survival_tree)
+```
+
+Create a test datatest
+```{r}
+nind_test<-200
+set.seed(-1)
+xx_numeric_test<-matrix(rnorm(nind_test*ndim_numeric),nind_test,ndim_numeric)
+colnames(xx_numeric_test)<-paste0("X",1:ncol(xx_numeric_test))
+xx_factor_test<-matrix(NA,nind_test,ndim_factor)
+xx_factor_test[,1]<-sample(c("AA","BB","CC","DD"),nind_test,replace=TRUE)
+xx_factor_test[,2]<-sample(c("apple","banana","banana","cherry"),nind_test,replace=TRUE)
+xx_factor_test[,3]<-sample(c("good","medium","poor"),nind_test,replace=TRUE)
+colnames(xx_factor_test)<-paste0("V",1:ncol(xx_factor_test))
+```
+
+```{r}
+weight<-predict_weight(a_survival_tree,xx_numeric_test,xx_factor_test)
+rowSums(weight)
+
+result<-predict_distance(a_survival_tree,xx_numeric_test,xx_factor_test)
+
+heatmap(result$ind_distance)
+```
