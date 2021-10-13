@@ -5,7 +5,7 @@ predict_distance<-function(
   missing="majority"){
   
   a_predict_weight<-predict_weight(survival_tree,matrix_numeric,matrix_factor,missing)
-  a_table<-tree_to_table(survival_tree$survival_tree)
+  a_table<-tree_to_table(survival_tree)
   
   root_to_node<-function(node_id){
     parent_node_id<-a_table$parent[node_id]

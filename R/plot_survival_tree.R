@@ -1,6 +1,6 @@
 plot_survival_tree<-function(survival_tree){
   
-  a_table<-tree_to_table(survival_tree$survival_tree)
+  a_table<-tree_to_table(survival_tree)
   a_table<-dplyr::arrange(a_table,plot_order)
   
   variable_names<-survival_tree$variable_names

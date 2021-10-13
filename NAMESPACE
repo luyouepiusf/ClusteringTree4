@@ -1,3 +1,7 @@
 useDynLib(ClusteringTree4, .registration=TRUE)
+import(dplyr)
+import(grid)
+import(gridtext)
+import(survival)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")

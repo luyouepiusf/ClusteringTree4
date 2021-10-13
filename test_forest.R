@@ -1,19 +1,21 @@
+library(ClusteringTree4)
+
 set.seed(0)
-nind<-800
-ndim_numeric<-5
-ndim_factor<-3
+nind<-400
+ndim_num<-5
+ndim_fac<-3
 ft<-rexp(nind,3)
 ct<-rexp(nind,3)
 ot<-pmin(ft,ct)
 delta<-ft<ct
-xx_numeric<-matrix(rnorm(nind*ndim_numeric),nind,ndim_numeric)
+xx_numeric<-matrix(rnorm(nind*ndim_num),nind,ndim_num)
 xx_numeric[1:10,1]<-NA
 xx_numeric[11:20,2]<-NA
 xx_numeric[21:30,3]<-NA
 xx_numeric[31:40,4]<-NA
 xx_numeric[41:50,5]<-NA
 colnames(xx_numeric)<-paste0("X",1:ncol(xx_numeric))
-xx_factor<-matrix(NA,nind,ndim_factor)
+xx_factor<-matrix(NA,nind,ndim_fac)
 xx_factor[,1]<-sample(c("AA","BB","CC","DD",NA),nind,replace=TRUE)
 xx_factor[,2]<-sample(c("apple","banana","banana","cherry",NA),nind,replace=TRUE)
 xx_factor[,3]<-sample(c("good","medium","poor",NA),nind,replace=TRUE)
@@ -23,6 +25,17 @@ library(dplyr)
 library(grid)
 library(gridtext)
 library(survival)
+
+a_survival_forest<-survival_forest(
+  ot,delta,rep(1,nind),xx_numeric,xx_factor,
+  significance=0.05,nboot=50)
+length(a_survival_forest)
+
+a_result<-predict_distance_forest(
+  a_survival_forest,
+  xx_numeric,
+  xx_factor)
+image(a_result$mean_distance)
 
 set.seed(0)
 nboot<-200

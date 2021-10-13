@@ -24,7 +24,7 @@ predict_weight<-function(
   }
   matrix_factor<-matrix_factor_int
   
-  a_table<-tree_to_table(survival_tree$survival_tree)
+  a_table<-tree_to_table(survival_tree)
   
   calculate_weight<-function(idx,weight,missing="majority"){
     if(missing=="majority"){
