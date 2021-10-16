@@ -49,7 +49,7 @@ predict_distance_forest<-function(
   
   for(boot_idx in 1:length(survival_forest)){
     a_distance<-predict_distance(survival_forest[[boot_idx]],matrix_numeric,matrix_factor,missing=missing)$ind_distance
-    sum_non_na<-sum_non_na+!is.na(sum_non_na)
+    sum_non_na<-sum_non_na+!is.na(a_distance)
     a_distance[is.na(a_distance)]<-0
     sum_distance<-sum_distance+a_distance
   }
