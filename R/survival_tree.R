@@ -6,7 +6,8 @@ survival_tree<-function(
   matrix_factor,
   significance=0.05,
   min_weight=50,
-  missing="majority"){
+  missing="majority",
+  testtype = c("Bonferroni")){
   
   ndim_numeric<-ncol(matrix_numeric)
   ndim_factor<-ncol(matrix_factor)
@@ -37,7 +38,8 @@ survival_tree<-function(
     xx_factor=matrix_factor,
     significance=significance,
     min_weight=min_weight,
-    missing=missing)
+    missing=missing,
+    testtype = testtype)
   
   return(list(
     variable_names=variable_names,

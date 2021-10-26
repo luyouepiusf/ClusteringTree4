@@ -52,9 +52,10 @@ a_survival_tree<-survival_tree(
   matrix_numeric=xx_numeric,
   matrix_factor=xx_factor,
   significance=0.05,
-  missing="weighted")
+  missing="weighted",
+  testtype = "nothing")
 
-a_table<-tree_to_table(a_survival_tree$survival_tree)
+a_table<-tree_to_table(a_survival_tree)
 a_table$survival[[2]]
 
 plot_survival_tree(a_survival_tree)
