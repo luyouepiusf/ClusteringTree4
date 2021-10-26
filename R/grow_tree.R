@@ -7,10 +7,17 @@ grow_tree<-function(
   xx_factor,
   significance,
   min_weight,
-  missing){
+  missing,
+  testtype = c("Bonferroni")){
+  
   
   xx_numeric<-data.matrix(xx_numeric)
   xx_factor<-data.matrix(xx_factor)
+  
+  if(  testtype == "Bonferroni"){ 
+  n_variable <- dim(xx_numeric)[2] + dim(xx_factor)[2]
+  significance <- significance/n_variable
+  }
   
   result_find_best_split<-find_best_split_cox_bone(time,event,weight,xx_numeric,xx_factor,min_weight)
   result_find_best_split$sum_weight<-sum(weight)
