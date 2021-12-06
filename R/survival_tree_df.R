@@ -7,6 +7,7 @@
 #' @param significance 
 #' @param min_weight minimum weight per observatin
 #' @param missing how missing values are dealts with.  missing = c("majority","omit","weighted), Need Lu to complete.
+#' @param testtype a character specifying how to compute the distribution of the test statistic.
 #'
 #' @return a clustertree object Need lu to detail.
 #' @export
@@ -16,10 +17,11 @@ survival_tree_df <- function(
   dt,
   name_time,
   name_event,
-  weight=rep(1,length(time)),
+  weight=rep(1,nrow(time)),
   significance=0.05,
   min_weight=50,
-  missing="majority"){
+  missing="majority",
+  testtype = c("Bonferroni")){
   
   
   matrix_numeric <- dt %>% select(where(is.numeric))
@@ -29,7 +31,7 @@ survival_tree_df <- function(
   
   ndim_numeric<-ncol(matrix_numeric)
   ndim_factor<-ncol(matrix_factor)
-  
+  nind <- nrow(dt)
   if(is.null(colnames(matrix_numeric))&ndim_numeric>=1)colnames(matrix_numeric)<-paste0("numeric",1:ncol(matrix_numeric),sep="")
   if(is.null(colnames(matrix_factor))&ndim_factor>=1)colnames(matrix_factor)<-paste0("factor",1:ncol(matrix_factor),sep="")
   variable_names<-c(colnames(matrix_numeric),colnames(matrix_factor))
@@ -56,7 +58,8 @@ survival_tree_df <- function(
     xx_factor=matrix_factor,
     significance=significance,
     min_weight=min_weight,
-    missing=missing)
+    missing=missing,
+    testtype =   testtype)
   
   return(list(
     variable_names=variable_names,
