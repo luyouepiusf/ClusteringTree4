@@ -8,6 +8,7 @@
 #' @param min_weight minimum weight per observatin
 #' @param missing how missing values are dealts with.  missing = c("majority","omit","weighted), Need Lu to complete.
 #' @param testtype a character specifying how to compute the distribution of the test statistic.
+#' @param variables_to_remove remove set of variable  e.g id
 #'
 #' @return a clustertree object Need lu to detail.
 #' @export
@@ -17,17 +18,22 @@ survival_tree_df <- function(
   dt,
   name_time,
   name_event,
-  weight=rep(1,nrow(time)),
+  variables_to_remove = c(),
+  weight=rep(1,nrow(dt)),
   significance=0.05,
   min_weight=50,
   missing="majority",
   testtype = c("Bonferroni")){
   
-  
-  matrix_numeric <- dt %>% select(where(is.numeric))
-  matrix_factor <-  dt %>% select(where(is.factor))
   time <- dt[,name_time]  
   event <- dt[,name_event]
+  matrix_numeric <- dt %>% 
+                      select(!all_of(c(variables_to_remove,name_time,name_event))) %>% # remove time and status
+                      select(where(is.numeric))
+  matrix_factor <-  dt %>% 
+                      select(!all_of(c(variables_to_remove,name_time,name_event))) %>% # remove time and status
+                      select(where(is.factor))
+
   
   ndim_numeric<-ncol(matrix_numeric)
   ndim_factor<-ncol(matrix_factor)
