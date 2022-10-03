@@ -4,10 +4,10 @@ using namespace Rcpp;
 List find_best_split_cox_bone(
     NumericVector time, 
     LogicalVector event, 
-    NumericVector weight,
     NumericMatrix xx_numeric,
     IntegerMatrix xx_factor,
-    double min_weight=50.0) {
+    NumericVector weights,
+    double min_weights=50.0) {
   
   const int nind=xx_numeric.nrow();
   const int ndim_numeric=xx_numeric.ncol();
@@ -17,7 +17,7 @@ List find_best_split_cox_bone(
   
   NumericVector time_sub;
   LogicalVector event_sub;
-  NumericVector weight_sub;
+  NumericVector weights_sub;
   NumericVector xx_numeric_sub;
   IntegerVector xx_factor_sub;
   
@@ -28,8 +28,8 @@ List find_best_split_cox_bone(
   LogicalVector to_right(nind);
   LogicalVector is_missing;
   
-  NumericVector weight_left,weight_right;
-  double sum_weight_left,sum_weight_right;
+  NumericVector weights_left,weights_right;
+  double sum_weights_left,sum_weights_right;
   
   NumericVector xx_numeric_unique;
   IntegerVector xx_factor_unique;
@@ -44,6 +44,9 @@ List find_best_split_cox_bone(
   IntegerVector factor_left;
   IntegerVector best_split_factor_left;
   
+  NumericVector zscore_numeric(ndim_numeric);zscore_numeric.fill(0.0);
+  NumericVector zscore_factor(ndim_factor);zscore_factor.fill(0.0);
+  
   for(jj=0;jj<ndim_numeric;jj++){
     xx_numeric_column=xx_numeric(_,jj);
     is_missing=is_na(xx_numeric_column);
@@ -53,7 +56,7 @@ List find_best_split_cox_bone(
     xx_numeric_sub=xx_numeric_column[bool_can_split];
     time_sub=time[bool_can_split];
     event_sub=event[bool_can_split];
-    weight_sub=weight[bool_can_split];
+    weights_sub=weights[bool_can_split];
     
     nsub=xx_numeric_sub.length();
     
@@ -64,29 +67,30 @@ List find_best_split_cox_bone(
       a_split=xx_numeric_unique(splitidx);
       to_left=xx_numeric_sub<=a_split;
       to_right=xx_numeric_sub>a_split;
-      weight_left=weight_sub[to_left];
-      sum_weight_left=Rcpp::sum(weight_left);
-      weight_right=weight_sub[to_right];
-      sum_weight_right=Rcpp::sum(weight_right);
-      if(sum_weight_left<min_weight)continue;
-      if(sum_weight_right<min_weight)continue;
+      weights_left=weights_sub[to_left];
+      sum_weights_left=Rcpp::sum(weights_left);
+      weights_right=weights_sub[to_right];
+      sum_weights_right=Rcpp::sum(weights_right);
+      if(sum_weights_left<min_weights)continue;
+      if(sum_weights_right<min_weights)continue;
       expected_zscore=0.0;
       variance_zscore=0.0;
       for(ii=0;ii<nsub;ii++){
         if(!event_sub(ii))continue;
-        if(to_right(ii))expected_zscore=expected_zscore+weight_sub(ii);
+        if(to_right(ii))expected_zscore=expected_zscore+weights_sub(ii);
         denominator=0.0;
         numerator=0.0;
         for(ii2=0;ii2<nsub;ii2++){
           if(time_sub(ii2)<time_sub(ii))continue;
-          denominator=denominator+weight_sub(ii2);
-          if(to_right(ii2))numerator=numerator+weight_sub(ii2);
+          denominator=denominator+weights_sub(ii2);
+          if(to_right(ii2))numerator=numerator+weights_sub(ii2);
         }
         fraction=numerator/denominator;
-        expected_zscore=expected_zscore-weight_sub(ii)*fraction;
-        variance_zscore=variance_zscore+weight_sub(ii)*(fraction-fraction*fraction);
+        expected_zscore=expected_zscore-weights_sub(ii)*fraction;
+        variance_zscore=variance_zscore+weights_sub(ii)*(fraction-fraction*fraction);
       }
       zscore=expected_zscore/std::sqrt(variance_zscore);
+      if(std::abs(zscore)>std::abs(zscore_numeric(jj)))zscore_numeric(jj)=zscore;
       if(std::abs(zscore)>std::abs(best_zscore)){
         best_zscore=zscore;
         best_split_numeric=a_split;
@@ -104,7 +108,7 @@ List find_best_split_cox_bone(
     xx_factor_sub=xx_factor_column[bool_can_split];
     time_sub=time[bool_can_split];
     event_sub=event[bool_can_split];
-    weight_sub=weight[bool_can_split];
+    weights_sub=weights[bool_can_split];
     
     nsub=xx_factor_sub.length();
     
@@ -134,29 +138,30 @@ List find_best_split_cox_bone(
       }
       to_right=!to_left;
       
-      weight_left=weight_sub[to_left];
-      sum_weight_left=Rcpp::sum(weight_left);
-      weight_right=weight_sub[to_right];
-      sum_weight_right=Rcpp::sum(weight_right);
-      if(sum_weight_left<min_weight)continue;
-      if(sum_weight_right<min_weight)continue;
+      weights_left=weights_sub[to_left];
+      sum_weights_left=Rcpp::sum(weights_left);
+      weights_right=weights_sub[to_right];
+      sum_weights_right=Rcpp::sum(weights_right);
+      if(sum_weights_left<min_weights)continue;
+      if(sum_weights_right<min_weights)continue;
       expected_zscore=0.0;
       variance_zscore=0.0;
       for(ii=0;ii<nsub;ii++){
         if(!event_sub(ii))continue;
-        if(to_right(ii))expected_zscore=expected_zscore+weight_sub(ii);
+        if(to_right(ii))expected_zscore=expected_zscore+weights_sub(ii);
         denominator=0.0;
         numerator=0.0;
         for(ii2=0;ii2<nsub;ii2++){
           if(time_sub(ii2)<time_sub(ii))continue;
-          denominator=denominator+weight_sub(ii2);
-          if(to_right(ii2))numerator=numerator+weight_sub(ii2);
+          denominator=denominator+weights_sub(ii2);
+          if(to_right(ii2))numerator=numerator+weights_sub(ii2);
         }
         fraction=numerator/denominator;
-        expected_zscore=expected_zscore-weight_sub(ii)*fraction;
-        variance_zscore=variance_zscore+weight_sub(ii)*(fraction-fraction*fraction);
+        expected_zscore=expected_zscore-weights_sub(ii)*fraction;
+        variance_zscore=variance_zscore+weights_sub(ii)*(fraction-fraction*fraction);
       }
       zscore=expected_zscore/std::sqrt(variance_zscore);
+      if(std::abs(zscore)>std::abs(zscore_factor(jj)))zscore_factor(jj)=zscore;
       if(std::abs(zscore)>std::abs(best_zscore)){
         best_zscore=zscore;
         best_split_factor_left=Rcpp::clone(factor_left);
@@ -172,8 +177,8 @@ List find_best_split_cox_bone(
     to_left=NumericVector::get_na();
     to_right=NumericVector::get_na();
     to_unsure=NumericVector::get_na();
-    weight_left=NumericVector::get_na();
-    weight_right=NumericVector::get_na();
+    weights_left=NumericVector::get_na();
+    weights_right=NumericVector::get_na();
     
   }else if(best_jj<ndim_numeric){
     xx_numeric_column=xx_numeric(_,best_jj);
@@ -198,10 +203,10 @@ List find_best_split_cox_bone(
       }
     }
     
-    weight_left=weight[to_left];
-    sum_weight_left=Rcpp::sum(weight_left);
-    weight_right=weight[to_right];
-    sum_weight_right=Rcpp::sum(weight_right);
+    weights_left=weights[to_left];
+    sum_weights_left=Rcpp::sum(weights_left);
+    weights_right=weights[to_right];
+    sum_weights_right=Rcpp::sum(weights_right);
     
     best_chisq=best_zscore*best_zscore;
     best_pvalue=R::pchisq(best_chisq,1.0,false,false);
@@ -234,15 +239,28 @@ List find_best_split_cox_bone(
       }
     }
     
-    weight_left=weight[to_left];
-    sum_weight_left=Rcpp::sum(weight_left);
-    weight_right=weight[to_right];
-    sum_weight_right=Rcpp::sum(weight_right);
+    weights_left=weights[to_left];
+    sum_weights_left=Rcpp::sum(weights_left);
+    weights_right=weights[to_right];
+    sum_weights_right=Rcpp::sum(weights_right);
     
     best_chisq=best_zscore*best_zscore;
     best_pvalue=R::pchisq(best_chisq,1.0,false,false);
     
     best_split_numeric=NumericVector::get_na();
+  }
+  
+  NumericVector all_zscore(ndim_numeric+ndim_factor);
+  NumericVector all_chisq(ndim_numeric+ndim_factor);
+  NumericVector all_pvalue(ndim_numeric+ndim_factor);
+  for(jj=0;jj<ndim_numeric+ndim_factor;jj++){
+    if(jj<ndim_numeric){
+      all_zscore(jj)=zscore_numeric(jj);
+    }else{
+      all_zscore(jj)=zscore_factor(jj-ndim_numeric);
+    }
+    all_chisq(jj)=all_zscore(jj)*all_zscore(jj);
+    all_pvalue(jj)=R::pchisq(all_chisq(jj),1.0,false,false);
   }
   
   List result=Rcpp::List::create(
@@ -255,7 +273,9 @@ List find_best_split_cox_bone(
     Rcpp::Named("to_left") = to_left,
     Rcpp::Named("to_right") = to_right,
     Rcpp::Named("to_unsure") = to_unsure,
-    Rcpp::Named("sum_weight_left") = sum_weight_left,
-    Rcpp::Named("sum_weight_right") = sum_weight_right);
+    Rcpp::Named("sum_weights_left") = sum_weights_left,
+    Rcpp::Named("sum_weights_right") = sum_weights_right,
+    Rcpp::Named("all_zscore") = all_zscore,
+    Rcpp::Named("all_pvalue") = all_pvalue);
   return(result);
 }

@@ -6,29 +6,34 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // find_best_split_cox_bone
-List find_best_split_cox_bone(NumericVector time, LogicalVector event, NumericVector weight, NumericMatrix xx_numeric, IntegerMatrix xx_factor, double min_weight);
-RcppExport SEXP _ClusteringTree4_find_best_split_cox_bone(SEXP timeSEXP, SEXP eventSEXP, SEXP weightSEXP, SEXP xx_numericSEXP, SEXP xx_factorSEXP, SEXP min_weightSEXP) {
+List find_best_split_cox_bone(NumericVector time, LogicalVector event, NumericMatrix xx_numeric, IntegerMatrix xx_factor, NumericVector weights, double min_weights);
+RcppExport SEXP _SurvivalClusteringTree_find_best_split_cox_bone(SEXP timeSEXP, SEXP eventSEXP, SEXP xx_numericSEXP, SEXP xx_factorSEXP, SEXP weightsSEXP, SEXP min_weightsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type time(timeSEXP);
     Rcpp::traits::input_parameter< LogicalVector >::type event(eventSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type weight(weightSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type xx_numeric(xx_numericSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type xx_factor(xx_factorSEXP);
-    Rcpp::traits::input_parameter< double >::type min_weight(min_weightSEXP);
-    rcpp_result_gen = Rcpp::wrap(find_best_split_cox_bone(time, event, weight, xx_numeric, xx_factor, min_weight));
+    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< double >::type min_weights(min_weightsSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_best_split_cox_bone(time, event, xx_numeric, xx_factor, weights, min_weights));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ClusteringTree4_find_best_split_cox_bone", (DL_FUNC) &_ClusteringTree4_find_best_split_cox_bone, 6},
+    {"_SurvivalClusteringTree_find_best_split_cox_bone", (DL_FUNC) &_SurvivalClusteringTree_find_best_split_cox_bone, 6},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_ClusteringTree4(DllInfo *dll) {
+RcppExport void R_init_SurvivalClusteringTree(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
